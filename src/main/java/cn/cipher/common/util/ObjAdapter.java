@@ -1,4 +1,4 @@
-package com.cipher.common.util;
+package cn.cipher.common.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

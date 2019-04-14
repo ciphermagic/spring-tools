@@ -1,4 +1,4 @@
-package com.cipher.common.util;
+package cn.cipher.common.util;
 
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;

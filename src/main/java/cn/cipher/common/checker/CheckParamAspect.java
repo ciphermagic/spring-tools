@@ -1,6 +1,6 @@
-package com.cipher.common.checker;
+package cn.cipher.common.checker;
 
-import com.cipher.common.util.ReflectionUtil;
+import cn.cipher.common.util.ReflectionUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

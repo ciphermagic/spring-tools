@@ -1,4 +1,4 @@
-package com.cipher.common.checker;
+package cn.cipher.common.checker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

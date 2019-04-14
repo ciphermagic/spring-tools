@@ -1,4 +1,4 @@
-package com.cipher.common.util;
+package cn.cipher.common.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

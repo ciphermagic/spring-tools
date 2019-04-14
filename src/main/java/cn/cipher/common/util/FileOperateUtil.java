@@ -1,4 +1,4 @@
-package com.cipher.common.util;
+package cn.cipher.common.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
