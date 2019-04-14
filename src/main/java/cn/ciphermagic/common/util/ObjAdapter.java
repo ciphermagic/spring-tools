@@ -20,16 +20,6 @@ public class ObjAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ObjAdapter.class);
 
-    /**
-     * 功能描述: 一般用于多个A对象到B对象的转换<br>
-     * <p>
-     * 用objectMapper完成对象转换后，运行decorator进行修饰，decorator是形如(vo,po)->{vo.setA(po.getB()}的表达式。
-     *
-     * @param collection  源对象集合
-     * @param targetClass 目标类型
-     * @param decorator   目标类型中使用参数的方法
-     * @return 目标对象集合
-     */
     public static <A, B> List<B> convert(Collection<A> collection,
                                          Class<B> targetClass, BiConsumer<A, B> decorator) {
         if (collection == null || collection.size() == 0) {
@@ -45,13 +35,6 @@ public class ObjAdapter {
         }
     }
 
-    /**
-     * 功能描述: 一般用于多个A对象到B对象的转换<br>
-     *
-     * @param collection  源对象集合
-     * @param targetClass 目标类型
-     * @return 目标对象集合
-     */
     public static <A, B> List<B> convert(Collection<A> collection,
                                          Class<B> targetClass) {
         if (collection == null || collection.size() == 0) {
@@ -64,16 +47,6 @@ public class ObjAdapter {
         }
     }
 
-    /**
-     * 功能描述: 一般用于单个A对象到B对象的转换<br>
-     * <p>
-     * 用objectMapper完成对象转换后，运行decorator进行修饰，decorator是形如(vo,po)->{vo.setA(po.getB()}的表达式。
-     *
-     * @param a           源对象，
-     * @param targetClass 目标类型
-     * @param decorator   目标类型中使用参数的方法
-     * @return 目标对象
-     */
     @SuppressWarnings("unchecked")
     public static <V, T> T convert(Object a, Class<T> targetClass,
                                    BiConsumer<V, T> decorator) {
@@ -93,13 +66,6 @@ public class ObjAdapter {
         return b;
     }
 
-    /**
-     * 功能描述: 一般用于单个A对象到B对象的转换<br>
-     *
-     * @param a           源对象，
-     * @param targetClass 目标类型
-     * @return 目标对象
-     */
     public static <T> T convert(Object a, Class<T> targetClass) {
         T b = null;
         if (a == null) {

@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Import;
 import java.lang.annotation.*;
 
 /**
- * @Author: CipherCui
- * @Description: enable dynamic controller
- * @Date: Created in 17:11 2018/10/16
+ * enable dynamic controller
+ *
+ * @author: CipherCui
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

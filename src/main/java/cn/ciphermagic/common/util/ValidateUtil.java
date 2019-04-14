@@ -19,13 +19,6 @@ public class ValidateUtil {
         ValidateUtil.checkSQL(sql, msg, err, Boolean.TRUE);
     }
 
-    /**
-     * 检查数据库操作是否异常
-     *
-     * @param sql         数据库操作lambda表达式，返回值为影响行数
-     * @param msg         错误提示信息
-     * @param includeZero 影响行数为0时，是否报错
-     */
     public static void checkSQL(Supplier<Integer> sql, String msg, Consumer<String> err, boolean includeZero) {
         try {
             int row = sql.get();

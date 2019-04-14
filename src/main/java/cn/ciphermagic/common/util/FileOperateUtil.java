@@ -35,11 +35,6 @@ public class FileOperateUtil {
      */
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    /**
-     * 下载文件到本地
-     *
-     * @param fileUrl url of file
-     */
     public static File downloadFile(String fileUrl) {
         String fileLocal = System.getProperty("java.io.tmpdir") + File.separator + FileOperateUtil.rename(fileUrl);
         try {
@@ -73,12 +68,6 @@ public class FileOperateUtil {
         return file;
     }
 
-    /**
-     * 功能描述: <br>
-     * 批量删除文件
-     *
-     * @param files files to delete
-     */
     public static boolean deleteFiles(String[] files) {
         boolean isSuccess = false;
         for (String f : files) {
@@ -90,12 +79,6 @@ public class FileOperateUtil {
         return isSuccess;
     }
 
-    /**
-     * 功能描述: <br>
-     * 批量删除文件
-     *
-     * @param files files to delete
-     */
     public static boolean deleteFiles(List<File> files) {
         boolean isSuccess = false;
         for (File f : files) {
@@ -106,12 +89,6 @@ public class FileOperateUtil {
         return isSuccess;
     }
 
-    /**
-     * 功能描述: <br>
-     * 删除单个文件
-     *
-     * @param file file to delete
-     */
     public static boolean deleteFile(File file) {
         boolean isSuccess = false;
         if (file != null && file.exists()) {
@@ -120,13 +97,6 @@ public class FileOperateUtil {
         return isSuccess;
     }
 
-    /**
-     * 功能描述: <br>
-     * 根据当前时间生成随机文件名称
-     *
-     * @param name file name
-     * @return new file name
-     */
     public static String rename(final String name) {
         final Long now = Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         final Long random = (long) (Math.random() * now);
@@ -137,13 +107,6 @@ public class FileOperateUtil {
         return fileName;
     }
 
-    /**
-     * 功能描述: <br>
-     * 获取文件名称后缀
-     *
-     * @param name file name
-     * @return suffix
-     */
     public static String suffix(final String name) {
         String suffix = "";
         if (name.lastIndexOf(".") != -1) {
@@ -184,13 +147,6 @@ public class FileOperateUtil {
         return prefix + ".zip";
     }
 
-    /**
-     * 功能描述: <br>
-     * 把多个文件合并成一个并输出到指定目录中
-     *
-     * @param outFile output file's path
-     * @param files files
-     */
     public static void mergeFiles(String outFile, String[] files) {
         FileChannel outChannel = null;
         FileInputStream fis = null;
@@ -234,12 +190,6 @@ public class FileOperateUtil {
         }
     }
 
-    /**
-     * 功能描述: <br>
-     * 创建目录
-     *
-     * @param dir directory
-     */
     public static boolean makeDir(String dir) {
         boolean isSuccess = true;
         final File file = new File(dir);

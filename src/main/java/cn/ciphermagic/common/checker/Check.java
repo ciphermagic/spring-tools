@@ -15,9 +15,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Check {
 
-    /**
-     * field name or SpEL expression
-     */
     String[] value() default {};
 
 }

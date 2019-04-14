@@ -44,7 +44,7 @@ public class DateTimeUtil {
      * 将短时间格式字符串转换为时间 yyyy-MM-dd
      *
      * @param strDate string of date
-     * @return date
+     * @return date date
      */
     public static Date strToDate(String strDate, String format) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);
