@@ -1,4 +1,4 @@
-package cn.cipher.common.controller;
+package cn.ciphermagic.common.controller;
 
 import org.springframework.context.annotation.Import;
 

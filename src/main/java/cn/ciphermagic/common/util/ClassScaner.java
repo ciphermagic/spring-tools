@@ -1,4 +1,4 @@
-package cn.cipher.common.util;
+package cn.ciphermagic.common.util;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ResourceLoaderAware;

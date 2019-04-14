@@ -1,4 +1,4 @@
-package cn.cipher.common.checker;
+package cn.ciphermagic.common.checker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

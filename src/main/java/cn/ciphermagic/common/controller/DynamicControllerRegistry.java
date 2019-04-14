@@ -1,6 +1,6 @@
-package cn.cipher.common.controller;
+package cn.ciphermagic.common.controller;
 
-import cn.cipher.common.util.ClassScaner;
+import cn.ciphermagic.common.util.ClassScaner;
 import javassist.*;
 import javassist.bytecode.*;
 import javassist.bytecode.annotation.Annotation;

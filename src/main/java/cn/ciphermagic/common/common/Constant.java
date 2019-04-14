@@ -1,4 +1,4 @@
-package cn.cipher.common.common;
+package cn.ciphermagic.common.common;
 
 /**
  * 通用常量类
