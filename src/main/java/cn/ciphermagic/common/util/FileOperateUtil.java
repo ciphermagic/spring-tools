@@ -38,7 +38,7 @@ public class FileOperateUtil {
     /**
      * 下载文件到本地
      *
-     * @param fileUrl
+     * @param fileUrl url of file
      */
     public static File downloadFile(String fileUrl) {
         String fileLocal = System.getProperty("java.io.tmpdir") + File.separator + FileOperateUtil.rename(fileUrl);
@@ -77,7 +77,7 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 批量删除文件
      *
-     * @param files
+     * @param files files to delete
      */
     public static boolean deleteFiles(String[] files) {
         boolean isSuccess = false;
@@ -94,7 +94,7 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 批量删除文件
      *
-     * @param files
+     * @param files files to delete
      */
     public static boolean deleteFiles(List<File> files) {
         boolean isSuccess = false;
@@ -110,7 +110,7 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 删除单个文件
      *
-     * @param file
+     * @param file file to delete
      */
     public static boolean deleteFile(File file) {
         boolean isSuccess = false;
@@ -124,8 +124,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 根据当前时间生成随机文件名称
      *
-     * @param name
-     * @return
+     * @param name file name
+     * @return new file name
      */
     public static String rename(final String name) {
         final Long now = Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
@@ -141,8 +141,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 获取文件名称后缀
      *
-     * @param name
-     * @return
+     * @param name file name
+     * @return suffix
      */
     public static String suffix(final String name) {
         String suffix = "";
@@ -156,8 +156,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 截取文件名称中"."之前的字符串
      *
-     * @param name
-     * @return
+     * @param name file name
+     * @return real name
      */
     public static String getBaseName(String name) {
         int index = name.lastIndexOf(".");
@@ -171,8 +171,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 生成压缩名称（xx.zip）
      *
-     * @param name
-     * @return
+     * @param name file name
+     * @return zip name
      */
     public static String zipName(final String name) {
         String prefix = "";
@@ -188,8 +188,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 把多个文件合并成一个并输出到指定目录中
      *
-     * @param outFile
-     * @param files
+     * @param outFile output file's path
+     * @param files files
      */
     public static void mergeFiles(String outFile, String[] files) {
         FileChannel outChannel = null;
@@ -221,7 +221,7 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 关闭资源
      *
-     * @param res
+     * @param res resource to close
      */
     public static void closeResource(Closeable res) {
         if (res != null) {
@@ -238,7 +238,7 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 创建目录
      *
-     * @param dir
+     * @param dir directory
      */
     public static boolean makeDir(String dir) {
         boolean isSuccess = true;
@@ -255,8 +255,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 从MultipartFile中获取文件字节数组
      *
-     * @param file
-     * @return
+     * @param file MultipartFile
+     * @return byte array
      */
     public static byte[] getBytes(MultipartFile file) {
         byte[] bytes = null;
@@ -273,9 +273,9 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 从MultipartFile中复制文件到指定目录
      *
-     * @param fileFullName
-     * @param mFile
-     * @return
+     * @param fileFullName fileFullName
+     * @param mFile MultipartFile
+     * @return file's byte num
      */
     public static int copy(String fileFullName, MultipartFile mFile) {
         int byteCount = 0;
@@ -299,9 +299,9 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 从MultipartFile中复制文件到指定目录
      *
-     * @param file
-     * @param mFile
-     * @return
+     * @param file file
+     * @param mFile MultipartFile
+     * @return file's byte num
      */
     public static int copy(File file, MultipartFile mFile) {
         int byteCount = 0;
@@ -325,8 +325,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 从response中获取输出流
      *
-     * @param response
-     * @return
+     * @param response response
+     * @return OutputStream
      */
     public static OutputStream getOutputStream(HttpServletResponse response) {
         OutputStream out = null;
@@ -342,7 +342,7 @@ public class FileOperateUtil {
     /**
      * outputStream flush
      *
-     * @param os
+     * @param os OutputStream
      */
     public static void flush(OutputStream os) {
         try {
@@ -359,8 +359,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 将字符串写入指定路径的文件
      *
-     * @param str
-     * @param filePath
+     * @param str string to write
+     * @param filePath file path
      */
     public static void writeFile(String str, String filePath) {
         byte[] buff = new byte[]{};
@@ -384,8 +384,8 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 从指定路径的文件中读取字符串
      *
-     * @param filePath
-     * @return
+     * @param filePath file path
+     * @return string from file
      */
     public static String readFile(String filePath) {
         String str = null;
@@ -412,7 +412,7 @@ public class FileOperateUtil {
     /**
      * 删除指定文件夹中指定时间间隔以前的文件或目录
      *
-     * @param delpath
+     * @param delpath file's path to delete
      */
     public static void deleteDir(String delpath, long interval) {
         File file = new File(delpath);

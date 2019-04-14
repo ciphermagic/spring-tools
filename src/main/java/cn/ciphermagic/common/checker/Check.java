@@ -7,9 +7,9 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * @Author: CipherCui
- * @Description: check param
- * @Date: Created in 17:11 2018/10/16
+ * check param
+ *
+ * @author: CipherCui
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RUNTIME)

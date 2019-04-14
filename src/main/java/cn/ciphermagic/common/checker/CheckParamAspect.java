@@ -22,9 +22,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * @Author: CipherCui
- * @Description: aspect for param check
- * @Date: Created in 17:11 2018/10/16
+ * aspect for param check
+ *
+ * @author: CipherCui
  */
 @Aspect
 public class CheckParamAspect {

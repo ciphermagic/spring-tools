@@ -7,9 +7,7 @@ import org.springframework.aop.support.AopUtils;
 import java.lang.reflect.Field;
 
 /**
- * @Author: CipherCui
- * @Description:
- * @Date: Created in 11:01 2018/10/18
+ * @author: CipherCui
  */
 public class AopTargetUtils {
 
@@ -17,8 +15,7 @@ public class AopTargetUtils {
      * 获取 目标对象
      *
      * @param proxy 代理对象
-     * @return
-     * @throws Exception
+     * @return real object
      */
     public static Object getTarget(Object proxy) {
         if (!AopUtils.isAopProxy(proxy)) {

@@ -12,9 +12,9 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
- * @Author: CipherCui
- * @Description: 对象适配器，对象之间的转换，如：VO转PO，PO转VO
- * @Date: Created in 11:00 2018/8/27
+ * 对象适配器，对象之间的转换，如：VO转PO，PO转VO
+ *
+ * @author: CipherCui
  */
 public class ObjAdapter {
 

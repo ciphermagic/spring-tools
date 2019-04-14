@@ -20,9 +20,6 @@ public class DateTimeUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(DateTimeUtil.class);
 
-    /**
-     * 得到二个日期间的间隔天数
-     */
     public static String getTwoDay(String sj1, String sj2) {
         SimpleDateFormat myFormatter = new SimpleDateFormat("yyyy-MM-dd");
         long day = 0;
@@ -46,8 +43,8 @@ public class DateTimeUtil {
     /**
      * 将短时间格式字符串转换为时间 yyyy-MM-dd
      *
-     * @param strDate
-     * @return
+     * @param strDate string of date
+     * @return date
      */
     public static Date strToDate(String strDate, String format) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);
@@ -59,9 +56,9 @@ public class DateTimeUtil {
     /**
      * 两个时间之间的天数
      *
-     * @param date1
-     * @param date2
-     * @return
+     * @param date1 date1
+     * @param date2 date2
+     * @return days
      */
     public static long getDays(String date1, String date2) {
         if (date1 == null || date1.equals("")) {
@@ -83,7 +80,6 @@ public class DateTimeUtil {
         return day;
     }
 
-    // 计算当月最后一天,返回字符串
     public static String getDefaultDay() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -97,7 +93,6 @@ public class DateTimeUtil {
         return str;
     }
 
-    // 上月第一天
     public static String getPreviousMonthFirst() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -111,7 +106,6 @@ public class DateTimeUtil {
         return str;
     }
 
-    // 获取当月第一天
     public static String getFirstDayOfMonth() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -122,7 +116,6 @@ public class DateTimeUtil {
         return str;
     }
 
-    // 获取当天时间
     public static String getNowTime(String dateformat) {
         Date now = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateformat);// 可以方便地修改日期格式
@@ -130,7 +123,6 @@ public class DateTimeUtil {
         return hehe;
     }
 
-    // 获得当前日期与本周日相差的天数
     public static int getMondayPlus() {
         Calendar cd = Calendar.getInstance();
         // 获得今天是一周的第几天，星期日是第一天，星期二是第二天......
@@ -142,7 +134,6 @@ public class DateTimeUtil {
         }
     }
 
-    // 获得上月最后一天的日期
     public static String getPreviousMonthEnd() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -155,7 +146,6 @@ public class DateTimeUtil {
         return str;
     }
 
-    // 获得下个月第一天的日期
     public static String getNextMonthFirst() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -167,7 +157,6 @@ public class DateTimeUtil {
         return str;
     }
 
-    // 获得下个月最后一天的日期
     public static String getNextMonthEnd() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -180,7 +169,6 @@ public class DateTimeUtil {
         return str;
     }
 
-    // 获得明年最后一天的日期
     public static String getNextYearEnd() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -193,7 +181,6 @@ public class DateTimeUtil {
         return str;
     }
 
-    // 获得明年第一天的日期
     public static String getNextYearFirst() {
         String str = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -206,7 +193,6 @@ public class DateTimeUtil {
 
     }
 
-    // 获得本年有多少天
     public static int getMaxYear() {
         Calendar cd = Calendar.getInstance();
         cd.set(Calendar.DAY_OF_YEAR, 1);// 把日期设为当年第一天
@@ -215,7 +201,6 @@ public class DateTimeUtil {
         return MaxYear;
     }
 
-    // 获得本年最后一天的日期 *
     public static String getCurrentYearEnd() {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");// 可以方便地修改日期格式
@@ -223,7 +208,6 @@ public class DateTimeUtil {
         return years + "-12-31";
     }
 
-    // 获得上年第一天的日期 *
     public static String getPreviousYearFirst() {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");// 可以方便地修改日期格式
@@ -233,7 +217,6 @@ public class DateTimeUtil {
         return years_value + "-1-1";
     }
 
-    // 获得本季度
     public static String getThisSeasonTime(int month) {
         int array[][] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}};
         int season = 1;
@@ -293,7 +276,7 @@ public class DateTimeUtil {
      * 是否闰年
      *
      * @param year 年
-     * @return
+     * @return is leap year
      */
     public static boolean isLeapYear(int year) {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);

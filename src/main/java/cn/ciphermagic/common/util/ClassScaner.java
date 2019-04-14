@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @Author: CipherCui
- * @Description:
- * @Date: Created in 9:15 2018/10/18
+ * @author: CipherCui
  */
 public class ClassScaner implements ResourceLoaderAware {
 

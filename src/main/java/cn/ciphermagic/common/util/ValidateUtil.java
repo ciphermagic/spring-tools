@@ -7,9 +7,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * @Author: CipherCui
- * @Description: 校验工具类
- * @Date: 13:14 2018/4/8
+ * 校验工具类
+ *
+ * @author: CipherCui
  */
 public class ValidateUtil {
 

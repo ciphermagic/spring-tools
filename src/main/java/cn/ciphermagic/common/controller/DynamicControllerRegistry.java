@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @Author: CipherCui
- * @Description: dynamic create controller by javassist, then register to the containing context.
- * @Date: Created in 14:00 2018/10/16
+ * dynamic create controller by javassist, then register to the containing context.
+ *
+ * @author: CipherCui
  */
 public class DynamicControllerRegistry extends ApplicationObjectSupport implements BeanDefinitionRegistryPostProcessor {
 
