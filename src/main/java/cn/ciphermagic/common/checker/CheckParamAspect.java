@@ -42,7 +42,7 @@ public class CheckParamAspect {
         this.unsuccessful = unsuccessful;
     }
 
-    public CheckParamAspect build(Function<String, Object> unsuccessful) {
+    public static CheckParamAspect build(Function<String, Object> unsuccessful) {
         CheckParamAspect aspect = new CheckParamAspect();
         aspect.setUnsuccessful(unsuccessful);
         return aspect;
