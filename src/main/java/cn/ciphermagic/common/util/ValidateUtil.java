@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * 校验工具类
+ * validate util
  *
  * @author: CipherCui
  */

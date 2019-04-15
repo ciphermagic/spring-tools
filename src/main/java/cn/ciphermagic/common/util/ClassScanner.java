@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * @author: CipherCui
  */
-public class ClassScaner implements ResourceLoaderAware {
+public class ClassScanner implements ResourceLoaderAware {
 
     private final List<TypeFilter> includeFilters = new LinkedList<TypeFilter>();
     private final List<TypeFilter> excludeFilters = new LinkedList<TypeFilter>();
@@ -35,71 +35,51 @@ public class ClassScaner implements ResourceLoaderAware {
 
     @SafeVarargs
     public static Set<Class<?>> scan(String[] basePackages, Class<? extends Annotation>... annotations) {
-        ClassScaner cs = new ClassScaner();
-
+        ClassScanner cs = new ClassScanner();
         if (annotations != null && annotations.length != 0) {
-            for (Class anno : annotations) {
-                cs.addIncludeFilter(new AnnotationTypeFilter(anno));
+            for (Class a : annotations) {
+                cs.addIncludeFilter(new AnnotationTypeFilter(a));
             }
         }
-
         Set<Class<?>> classes = new HashSet<>();
         for (String s : basePackages) {
             classes.addAll(cs.doScan(s));
         }
-
         return classes;
     }
 
     @SafeVarargs
     public static Set<Class<?>> scan(String basePackages, Class<? extends Annotation>... annotations) {
-        return ClassScaner.scan(StringUtils.tokenizeToStringArray(basePackages, ",; \t\n"), annotations);
-    }
-
-    public final ResourceLoader getResourceLoader() {
-        return this.resourcePatternResolver;
+        return ClassScanner.scan(StringUtils.tokenizeToStringArray(basePackages, ",; \t\n"), annotations);
     }
 
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourcePatternResolver = ResourcePatternUtils
-                .getResourcePatternResolver(resourceLoader);
-        this.metadataReaderFactory = new CachingMetadataReaderFactory(
-                resourceLoader);
+        this.resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader);
+        this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
     }
 
     public void addIncludeFilter(TypeFilter includeFilter) {
         this.includeFilters.add(includeFilter);
     }
 
-    public void addExcludeFilter(TypeFilter excludeFilter) {
-        this.excludeFilters.add(0, excludeFilter);
-    }
-
-    public void resetFilters(boolean useDefaultFilters) {
-        this.includeFilters.clear();
-        this.excludeFilters.clear();
+    public void addExcludeFilter(TypeFilter includeFilter) {
+        this.excludeFilters.add(includeFilter);
     }
 
     public Set<Class<?>> doScan(String basePackage) {
         Set<Class<?>> classes = new HashSet<>();
         try {
             String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-                    + org.springframework.util.ClassUtils
-                    .convertClassNameToResourcePath(SystemPropertyUtils
-                            .resolvePlaceholders(basePackage))
+                    + org.springframework.util.ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders(basePackage))
                     + "/**/*.class";
-            Resource[] resources = this.resourcePatternResolver
-                    .getResources(packageSearchPath);
-
-            for (int i = 0; i < resources.length; i++) {
-                Resource resource = resources[i];
+            Resource[] resources = this.resourcePatternResolver.getResources(packageSearchPath);
+            for (Resource resource : resources) {
                 if (resource.isReadable()) {
                     MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(resource);
                     if ((includeFilters.size() == 0 && excludeFilters.size() == 0) || matches(metadataReader)) {
                         try {
-                            classes.add(Class.forName(metadataReader
-                                    .getClassMetadata().getClassName()));
+                            classes.add(Class.forName(metadataReader.getClassMetadata().getClassName()));
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
@@ -107,8 +87,7 @@ public class ClassScaner implements ResourceLoaderAware {
                 }
             }
         } catch (IOException ex) {
-            throw new BeanDefinitionStoreException(
-                    "I/O failure during classpath scanning", ex);
+            throw new BeanDefinitionStoreException("I/O failure during classpath scanning", ex);
         }
         return classes;
     }

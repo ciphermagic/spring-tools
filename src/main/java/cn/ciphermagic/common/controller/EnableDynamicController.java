@@ -16,6 +16,11 @@ import java.lang.annotation.*;
 @Import(DynamicControllerRegistry.class)
 public @interface EnableDynamicController {
 
+    /**
+     * package path to scan
+     *
+     * @return package path
+     */
     String value() default "";
 
 }

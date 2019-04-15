@@ -20,8 +20,7 @@ public class ObjAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ObjAdapter.class);
 
-    public static <A, B> List<B> convert(Collection<A> collection,
-                                         Class<B> targetClass, BiConsumer<A, B> decorator) {
+    public static <A, B> List<B> convert(Collection<A> collection, Class<B> targetClass, BiConsumer<A, B> decorator) {
         if (collection == null || collection.size() == 0) {
             return new ArrayList<>();
         } else {
@@ -35,21 +34,18 @@ public class ObjAdapter {
         }
     }
 
-    public static <A, B> List<B> convert(Collection<A> collection,
-                                         Class<B> targetClass) {
+    public static <A, B> List<B> convert(Collection<A> collection, Class<B> targetClass) {
         if (collection == null || collection.size() == 0) {
             return new ArrayList<>();
         } else {
             ObjectMapper om = new ObjectMapper();
-            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                    false);
+            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return collection.stream().map(a -> om.convertValue(a, targetClass)).collect(Collectors.toList());
         }
     }
 
     @SuppressWarnings("unchecked")
-    public static <V, T> T convert(Object a, Class<T> targetClass,
-                                   BiConsumer<V, T> decorator) {
+    public static <V, T> T convert(Object a, Class<T> targetClass, BiConsumer<V, T> decorator) {
         T b = null;
         if (a == null) {
             try {

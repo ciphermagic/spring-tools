@@ -1,6 +1,6 @@
 package cn.ciphermagic.common.controller;
 
-import cn.ciphermagic.common.util.ClassScaner;
+import cn.ciphermagic.common.util.ClassScanner;
 import javassist.*;
 import javassist.bytecode.*;
 import javassist.bytecode.annotation.Annotation;
@@ -16,10 +16,8 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * dynamic create controller by javassist, then register to the containing context.
@@ -29,20 +27,15 @@ import java.util.Set;
 public class DynamicControllerRegistry extends ApplicationObjectSupport implements BeanDefinitionRegistryPostProcessor {
 
     /**
-     * spare using for findBasePackage
-     */
-    private static final Set<String> TOP_PACKAGES = new HashSet<String>() {{
-        add("com");
-        add("cn");
-        add("org");
-        add("net");
-    }};
-
-    /**
      * service class's base package path
      */
     private String basePackage;
 
+    /**
+     * when context has init, find the base package
+     *
+     * @param context applicationContext
+     */
     @Override
     protected void initApplicationContext(ApplicationContext context) {
         super.initApplicationContext(context);
@@ -54,8 +47,9 @@ public class DynamicControllerRegistry extends ApplicationObjectSupport implemen
         if (StringUtils.isEmpty(basePackage)) {
             throw new IllegalArgumentException("could not find EnableDynamicController annotation.");
         }
-        ClassScaner.scan(basePackage, BindingApi.class).forEach(serviceClass -> {
-            Class<?> apiClass = serviceClass.getAnnotation(BindingApi.class).value();
+        ClassScanner.scan(basePackage, DynamicController.class).forEach(serviceClass -> {
+            // prepare class
+            Class<?> apiClass = getImplementedClass(serviceClass);
             String className = assembleClassName(serviceClass.getName(), apiClass.getSimpleName());
             // make class
             Class clazz = makeClass(className, apiClass, serviceClass);
@@ -70,7 +64,7 @@ public class DynamicControllerRegistry extends ApplicationObjectSupport implemen
     }
 
     /**
-     * find annotation in application context
+     * find annotation in application context, and set the base package
      *
      * @param applicationContext containing application context
      */
@@ -92,18 +86,17 @@ public class DynamicControllerRegistry extends ApplicationObjectSupport implemen
     }
 
     /**
-     * find annotation in top package, eg: cn, com, org ...
+     * get the implemented class
+     *
+     * @param serviceClass the class to create controller
+     * @return implemented class
      */
-    private void findBasePackage() {
-        for (String top : TOP_PACKAGES) {
-            Set<Class<?>> set = ClassScaner.scan(top, EnableDynamicController.class);
-            if (!CollectionUtils.isEmpty(set)) {
-                Class<?> clazz = set.iterator().next();
-                EnableDynamicController annotation = clazz.getAnnotation(EnableDynamicController.class);
-                this.basePackage = annotation.value();
-                break;
-            }
+    private Class<?> getImplementedClass(Class<?> serviceClass) {
+        Class<?> apiClass = serviceClass.getAnnotation(DynamicController.class).value();
+        if (apiClass == String.class) {
+            return serviceClass.getInterfaces()[0];
         }
+        return apiClass;
     }
 
     /**

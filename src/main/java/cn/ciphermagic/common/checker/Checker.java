@@ -29,6 +29,13 @@ import java.util.function.Function;
 @Aspect
 public class Checker {
 
+    // -====================== constant =========================
+
+    private static final String SPLITOR = ":";
+    private static final String FIELD_SPLITOR = ",";
+
+    // -====================== log =========================
+
     private static final Logger LOG = LoggerFactory.getLogger(Checker.class);
 
     private ExpressionParser parser = new SpelExpressionParser();
@@ -185,11 +192,11 @@ public class Checker {
         } else {
             fieldInfo.optEnum = Operator.NOT_NULL;
         }
-        // 直接赋值字段
+        // direct assignment field
         if (fieldInfo.optEnum == Operator.NOT_NULL || fieldInfo.optEnum == Operator.SPEL) {
             fieldInfo.field = fieldStr;
         }
-        // 其他操作符，需要分离出字段和操作数
+        // other operators, need to separate fields and operands
         else {
             fieldInfo.field = fieldStr.split(fieldInfo.optEnum.value)[0];
             fieldInfo.operatorNum = fieldStr.split(fieldInfo.optEnum.value)[1];
@@ -221,11 +228,11 @@ public class Checker {
     }
 
     /**
-     * 是否大于
+     * is greater than
      *
-     * @param value       字段值
-     * @param operatorNum 操作数
-     * @return 是否大于
+     * @param value       field value
+     * @param operatorNum operatorNum
+     * @return is greater than
      */
     private static Boolean isGreaterThan(Object value, String operatorNum) {
         Boolean isGreaterThan = Boolean.FALSE;
@@ -247,11 +254,11 @@ public class Checker {
     }
 
     /**
-     * 是否大于等于
+     * is greater than or equal to
      *
-     * @param value       字段值
-     * @param operatorNum 操作数
-     * @return 是否大于等于
+     * @param value       field value
+     * @param operatorNum operatorNum
+     * @return is greater than or equal to
      */
     private static Boolean isGreaterThanEqual(Object value, String operatorNum) {
         Boolean isGreaterThanEqual = Boolean.FALSE;
@@ -273,11 +280,11 @@ public class Checker {
     }
 
     /**
-     * 是否少于
+     * is less than
      *
-     * @param value       字段值
-     * @param operatorNum 操作数
-     * @return 是否少于
+     * @param value       field value
+     * @param operatorNum operatorNum
+     * @return is less than
      */
     private static Boolean isLessThan(Object value, String operatorNum) {
         Boolean isLessThan = Boolean.FALSE;
@@ -299,11 +306,11 @@ public class Checker {
     }
 
     /**
-     * 是否少于等于
+     * is less than or equal to
      *
-     * @param value       字段值
-     * @param operatorNum 操作数
-     * @return 是否少于等于
+     * @param value       field value
+     * @param operatorNum operatorNum
+     * @return is less than or equal to
      */
     private static Boolean isLessThanEqual(Object value, String operatorNum) {
         Boolean isLessThanEqual = Boolean.FALSE;
@@ -325,11 +332,11 @@ public class Checker {
     }
 
     /**
-     * 是否不等于
+     * is not equal
      *
-     * @param value       字段值
-     * @param operatorNum 操作数
-     * @return 是否不等于
+     * @param value       field value
+     * @param operatorNum operatorNum
+     * @return is not equal
      */
     private static Boolean isNotEqual(Object value, String operatorNum) {
         Boolean isNotEqual = Boolean.FALSE;
@@ -351,26 +358,25 @@ public class Checker {
     }
 
     /**
-     * 判断是否符合参数规则
+     * is meets the parameter rules
      *
-     * @param method    方法
-     * @param arguments 方法参数
-     * @return 是否符合
+     * @param method    method
+     * @param arguments arguments
+     * @return is meets
      */
     private Boolean isCheck(Method method, Object[] arguments) {
         Boolean isCheck = Boolean.TRUE;
-        if (!method.isAnnotationPresent(Check.class)
-                || arguments == null) {
+        if (!method.isAnnotationPresent(Check.class) || arguments == null) {
             isCheck = Boolean.FALSE;
         }
         return isCheck;
     }
 
     /**
-     * 获取方法
+     * get the method
      *
      * @param joinPoint ProceedingJoinPoint
-     * @return 方法
+     * @return method
      */
     private Method getMethod(ProceedingJoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -390,27 +396,27 @@ public class Checker {
     }
 
     /**
-     * 字段信息
+     * file info
      */
     class FieldInfo {
         /**
-         * 字段
+         * field
          */
         String field;
         /**
-         * 提示信息
+         * prompt message
          */
         String innerMsg;
         /**
-         * 操作符
+         * operator
          */
         String operator;
         /**
-         * 操作数
+         * num of operator
          */
         String operatorNum;
         /**
-         * 操作枚举
+         * enum of operator
          */
         Operator optEnum;
 
@@ -427,35 +433,35 @@ public class Checker {
     }
 
     /**
-     * 操作枚举
+     * enum of operator
      */
     enum Operator {
         /**
-         * spel 表达式
+         * spel expression
          */
         SPEL("match spel expression", null),
         /**
-         * 大于
+         * GreaterThan
          */
         GREATER_THAN(">", Checker::isGreaterThan),
         /**
-         * 大于等于
+         * GreaterThanEqual
          */
         GREATER_THAN_EQUAL(">=", Checker::isGreaterThanEqual),
         /**
-         * 小于
+         * LessThan
          */
         LESS_THAN("<", Checker::isLessThan),
         /**
-         * 小于等于
+         * LessThanEqual
          */
         LESS_THAN_EQUAL("<=", Checker::isLessThanEqual),
         /**
-         * 不等于
+         * NotEqual
          */
         NOT_EQUAL("!=", Checker::isNotEqual),
         /**
-         * 不为空
+         * NotNull
          */
         NOT_NULL("not null", Checker::isNotNull);
 
@@ -467,10 +473,5 @@ public class Checker {
             this.fun = fun;
         }
     }
-
-    // -====================== 常量 =========================
-
-    private static final String SPLITOR = ":";
-    private static final String FIELD_SPLITOR = ",";
 
 }

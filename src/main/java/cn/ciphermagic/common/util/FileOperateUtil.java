@@ -199,8 +199,6 @@ public class FileOperateUtil {
         return isSuccess;
     }
 
-
-
     /**
      * 功能描述: <br>
      * 从MultipartFile中获取文件字节数组
@@ -224,7 +222,7 @@ public class FileOperateUtil {
      * 从MultipartFile中复制文件到指定目录
      *
      * @param fileFullName fileFullName
-     * @param mFile MultipartFile
+     * @param mFile        MultipartFile
      * @return file's byte num
      */
     public static int copy(String fileFullName, MultipartFile mFile) {
@@ -249,7 +247,7 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 从MultipartFile中复制文件到指定目录
      *
-     * @param file file
+     * @param file  file
      * @param mFile MultipartFile
      * @return file's byte num
      */
@@ -309,7 +307,7 @@ public class FileOperateUtil {
      * 功能描述: <br>
      * 将字符串写入指定路径的文件
      *
-     * @param str string to write
+     * @param str      string to write
      * @param filePath file path
      */
     public static void writeFile(String str, String filePath) {
