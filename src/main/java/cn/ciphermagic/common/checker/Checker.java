@@ -27,34 +27,66 @@ import java.util.function.Function;
  * @author: CipherCui
  */
 @Aspect
-public class CheckParamAspect {
+public class Checker {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CheckParamAspect.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Checker.class);
 
     private ExpressionParser parser = new SpelExpressionParser();
     private LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
-    private Function<String, Object> unsuccessful;
+    private Function<String, Object> unsuccess;
 
-    private CheckParamAspect() {
+    private Checker() {
     }
 
-    public void setUnsuccessful(Function<String, Object> unsuccessful) {
-        this.unsuccessful = unsuccessful;
+    /**
+     * Action performed when check fails
+     *
+     * @param unsuccess lambda of the action
+     */
+    public void setUnsuccess(Function<String, Object> unsuccess) {
+        this.unsuccess = unsuccess;
     }
 
-    public static CheckParamAspect build(Function<String, Object> unsuccessful) {
-        CheckParamAspect aspect = new CheckParamAspect();
-        aspect.setUnsuccessful(unsuccessful);
-        return aspect;
+    /**
+     * checker builder
+     */
+    public static class Builder {
+        private Checker checker = new Checker();
+
+        public Builder id(Function<String, Object> unsuccess) {
+            checker.setUnsuccess(unsuccess);
+            return this;
+        }
+
+        public Checker build() {
+            return checker;
+        }
     }
 
+    /**
+     * initialize builder
+     *
+     * @return checker builder
+     * @see Builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * aop around the method
+     *
+     * @param point ProceedingJoinPoint
+     * @return method result
+     * @throws Throwable method exception
+     */
     @Around(value = "@annotation(cn.ciphermagic.common.checker.Check)")
     public Object check(ProceedingJoinPoint point) throws Throwable {
         Object obj;
         // check param
         String msg = doCheck(point);
         if (!StringUtils.isEmpty(msg)) {
-            return unsuccessful.apply(msg);
+            return unsuccess.apply(msg);
         }
         obj = point.proceed();
         return obj;
@@ -102,9 +134,9 @@ public class CheckParamAspect {
     /**
      * parse spel expression
      *
-     * @param method        method
-     * @param arguments     arguments
-     * @param spel          spel expression
+     * @param method    method
+     * @param arguments arguments
+     * @param spel      spel expression
      * @return is match
      */
     private Boolean parseSpel(Method method, Object[] arguments, String spel) {
@@ -405,27 +437,27 @@ public class CheckParamAspect {
         /**
          * 大于
          */
-        GREATER_THAN(">", CheckParamAspect::isGreaterThan),
+        GREATER_THAN(">", Checker::isGreaterThan),
         /**
          * 大于等于
          */
-        GREATER_THAN_EQUAL(">=", CheckParamAspect::isGreaterThanEqual),
+        GREATER_THAN_EQUAL(">=", Checker::isGreaterThanEqual),
         /**
          * 小于
          */
-        LESS_THAN("<", CheckParamAspect::isLessThan),
+        LESS_THAN("<", Checker::isLessThan),
         /**
          * 小于等于
          */
-        LESS_THAN_EQUAL("<=", CheckParamAspect::isLessThanEqual),
+        LESS_THAN_EQUAL("<=", Checker::isLessThanEqual),
         /**
          * 不等于
          */
-        NOT_EQUAL("!=", CheckParamAspect::isNotEqual),
+        NOT_EQUAL("!=", Checker::isNotEqual),
         /**
          * 不为空
          */
-        NOT_NULL("not null", CheckParamAspect::isNotNull);
+        NOT_NULL("not null", Checker::isNotNull);
 
         private String value;
         private BiFunction<Object, String, Boolean> fun;
