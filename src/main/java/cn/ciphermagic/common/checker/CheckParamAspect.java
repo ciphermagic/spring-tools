@@ -48,7 +48,7 @@ public class CheckParamAspect {
         return aspect;
     }
 
-    @Around(value = "@annotation(com.tupperware.pos.common.annotation.Check)")
+    @Around(value = "@annotation(cn.ciphermagic.common.checker.Check)")
     public Object check(ProceedingJoinPoint point) throws Throwable {
         Object obj;
         // check param
