@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Scan for eligible classes
+ *
  * @author: CipherCui
  */
 public class ClassScanner implements ResourceLoaderAware {
@@ -33,6 +35,13 @@ public class ClassScanner implements ResourceLoaderAware {
     private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
     private MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(this.resourcePatternResolver);
 
+    /**
+     * scan classes with annotations
+     *
+     * @param basePackages base package array
+     * @param annotations  annotations
+     * @return eligible class
+     */
     @SafeVarargs
     public static Set<Class<?>> scan(String[] basePackages, Class<? extends Annotation>... annotations) {
         ClassScanner cs = new ClassScanner();
@@ -48,6 +57,13 @@ public class ClassScanner implements ResourceLoaderAware {
         return classes;
     }
 
+    /**
+     * scan classes with annotations
+     *
+     * @param basePackages base package string
+     * @param annotations  annotations
+     * @return eligible class
+     */
     @SafeVarargs
     public static Set<Class<?>> scan(String basePackages, Class<? extends Annotation>... annotations) {
         return ClassScanner.scan(StringUtils.tokenizeToStringArray(basePackages, ",; \t\n"), annotations);

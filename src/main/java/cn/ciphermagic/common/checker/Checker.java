@@ -386,8 +386,7 @@ public class Checker {
                 method = joinPoint
                         .getTarget()
                         .getClass()
-                        .getDeclaredMethod(joinPoint.getSignature().getName(),
-                                method.getParameterTypes());
+                        .getDeclaredMethod(joinPoint.getSignature().getName(), method.getParameterTypes());
             } catch (SecurityException | NoSuchMethodException e) {
                 LOG.error("" + e);
             }
@@ -419,17 +418,6 @@ public class Checker {
          * enum of operator
          */
         Operator optEnum;
-
-        @Override
-        public String toString() {
-            return "FieldInfo{" +
-                    "field='" + field + '\'' +
-                    ", innerMsg='" + innerMsg + '\'' +
-                    ", operator='" + operator + '\'' +
-                    ", operatorNum='" + operatorNum + '\'' +
-                    ", optEnum=" + optEnum +
-                    '}';
-        }
     }
 
     /**
