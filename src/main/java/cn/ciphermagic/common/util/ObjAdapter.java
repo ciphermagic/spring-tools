@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
- * 对象适配器，对象之间的转换，如：VO转PO，PO转VO
+ * Object adapter, conversion between objects, such as: VO to PO, PO to VO
  *
  * @author: CipherCui
  */
@@ -72,8 +72,7 @@ public class ObjAdapter {
             }
         } else {
             ObjectMapper om = new ObjectMapper();
-            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                    false);
+            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             b = om.convertValue(a, targetClass);
         }
         return b;

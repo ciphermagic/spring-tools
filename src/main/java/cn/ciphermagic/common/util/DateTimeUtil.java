@@ -22,6 +22,7 @@ public class DateTimeUtil {
      * Convert format string to date
      *
      * @param strDate string of date
+     * @param format  date format
      * @return date date
      */
     public static Date strToDate(String strDate, String format) {
@@ -68,17 +69,35 @@ public class DateTimeUtil {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
 
+    /**
+     * date to cron expression
+     *
+     * @param date date
+     * @return cron expression
+     */
     public static String getCron(Date date) {
         String dateFormat = "ss mm HH dd MM ? yyyy";
         return formatDateByPattern(date, dateFormat);
     }
 
+    /**
+     * long type of time to cron expression
+     *
+     * @param time long type of time
+     * @return cron expression
+     */
     public static String getCron(Long time) {
         Date date = new Date(time);
         String dateFormat = "ss mm HH dd MM ? yyyy";
         return formatDateByPattern(date, dateFormat);
     }
 
+    /**
+     * cron expression to time
+     *
+     * @param cron cron expression
+     * @return long type of time
+     */
     public static Long cron2Time(String cron) {
         Long time = null;
         SimpleDateFormat sdf = new SimpleDateFormat("ss mm HH dd MM ? yyyy");
@@ -91,6 +110,12 @@ public class DateTimeUtil {
         return time;
     }
 
+    /**
+     * get current timestamp
+     *
+     * @return current timestamp
+     * @see java.sql.Timestamp
+     */
     public static Timestamp getTimestamp() {
         return new Timestamp(System.currentTimeMillis());
     }

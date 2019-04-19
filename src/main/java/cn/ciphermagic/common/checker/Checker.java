@@ -1,6 +1,5 @@
 package cn.ciphermagic.common.checker;
 
-import cn.ciphermagic.common.util.ReflectionUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,9 +13,11 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -60,7 +61,7 @@ public class Checker {
     public static class Builder {
         private Checker checker = new Checker();
 
-        public Builder id(Function<String, Object> unsuccess) {
+        public Builder unsuccess(Function<String, Object> unsuccess) {
             checker.setUnsuccess(unsuccess);
             return this;
         }
@@ -105,7 +106,7 @@ public class Checker {
      * @param point ProceedingJoinPoint
      * @return error message
      */
-    private String doCheck(ProceedingJoinPoint point) {
+    private String doCheck(ProceedingJoinPoint point) throws SQLException {
         // get arguments
         Object[] arguments = point.getArgs();
         // get method
@@ -125,7 +126,9 @@ public class Checker {
                     if (info.optEnum == Operator.SPEL) {
                         isValid = parseSpel(method, arguments, info.field);
                     } else {
-                        Object value = ReflectionUtil.invokeGetter(vo, info.field);
+                        String getMethodName = "get" + StringUtils.capitalize(info.field);
+                        Method getMethod = ReflectionUtils.findMethod(vo.getClass(), getMethodName);
+                        Object value = ReflectionUtils.invokeJdbcMethod(getMethod, vo);
                         isValid = info.optEnum.fun.apply(value, info.operatorNum);
                     }
                     if (!isValid) {

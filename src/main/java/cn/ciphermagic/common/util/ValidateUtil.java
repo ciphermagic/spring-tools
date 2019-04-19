@@ -27,7 +27,7 @@ public class ValidateUtil {
                     err.accept(msg);
                 }
             } else {
-                // 允许没有一条记录操作成功时,不回滚事务
+                // Allows no transaction to be rolled back when no record operation succeeds
                 if (row < 0) {
                     err.accept(msg);
                 }
