@@ -10,6 +10,7 @@ import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.ast.Operator;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.CollectionUtils;
@@ -176,8 +177,12 @@ public class Checker {
         String innerMsg = "";
         // parse error message
         if (fieldStr.contains(SPLITOR)) {
-            innerMsg = fieldStr.split(SPLITOR)[1];
-            fieldStr = fieldStr.split(SPLITOR)[0];
+            if (fieldStr.split(SPLITOR).length == 2) {
+                innerMsg = fieldStr.split(SPLITOR)[1].trim();
+                fieldStr = fieldStr.split(SPLITOR)[0].trim();
+            } else {
+                throw new IllegalArgumentException("@Check annotation error: " + fieldStr);
+            }
         }
         // parse operator
         if (fieldStr.startsWith("#")) {
