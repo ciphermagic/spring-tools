@@ -129,7 +129,7 @@ public class Checker {
                     } else {
                         String getMethodName = "get" + StringUtils.capitalize(info.field);
                         Method getMethod = ReflectionUtils.findMethod(vo.getClass(), getMethodName);
-                        Object value = ReflectionUtils.invokeJdbcMethod(getMethod, vo);
+                        Object value = ReflectionUtils.invokeMethod(getMethod, vo);
                         isValid = info.optEnum.fun.apply(value, info.operatorNum);
                     }
                     if (!isValid) {
