@@ -29,8 +29,8 @@ import java.util.Set;
  */
 public class ClassScanner implements ResourceLoaderAware {
 
-    private final List<TypeFilter> includeFilters = new LinkedList<TypeFilter>();
-    private final List<TypeFilter> excludeFilters = new LinkedList<TypeFilter>();
+    private final List<TypeFilter> includeFilters = new LinkedList<>();
+    private final List<TypeFilter> excludeFilters = new LinkedList<>();
 
     private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
     private MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(this.resourcePatternResolver);
@@ -46,7 +46,7 @@ public class ClassScanner implements ResourceLoaderAware {
     public static Set<Class<?>> scan(String[] basePackages, Class<? extends Annotation>... annotations) {
         ClassScanner cs = new ClassScanner();
         if (annotations != null && annotations.length != 0) {
-            for (Class a : annotations) {
+            for (Class<? extends Annotation> a : annotations) {
                 cs.addIncludeFilter(new AnnotationTypeFilter(a));
             }
         }
@@ -93,7 +93,8 @@ public class ClassScanner implements ResourceLoaderAware {
             for (Resource resource : resources) {
                 if (resource.isReadable()) {
                     MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(resource);
-                    if ((includeFilters.size() == 0 && excludeFilters.size() == 0) || matches(metadataReader)) {
+                    boolean isEmpty = includeFilters.size() == 0 && excludeFilters.size() == 0;
+                    if (isEmpty || matches(metadataReader)) {
                         try {
                             classes.add(Class.forName(metadataReader.getClassMetadata().getClassName()));
                         } catch (ClassNotFoundException e) {

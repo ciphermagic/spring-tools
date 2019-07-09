@@ -20,6 +20,19 @@ public class ObjAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ObjAdapter.class);
 
+    /**
+     * Generally used for the conversion of multiple A objects to B objects
+     * <p>
+     * After the objectMapper is used to convert the object, run the decorator to decorate it.
+     * The decorator is an expression of the form (vo,po) -&gt; {vo.setA(po.getB()}.
+     *
+     * @param collection  source object collection
+     * @param targetClass target type
+     * @param decorator   modify the target object
+     * @param <A>         source object generic
+     * @param <B>         target generic
+     * @return target object collection
+     */
     public static <A, B> List<B> convert(Collection<A> collection, Class<B> targetClass, BiConsumer<A, B> decorator) {
         if (collection == null || collection.size() == 0) {
             return new ArrayList<>();
@@ -34,6 +47,15 @@ public class ObjAdapter {
         }
     }
 
+    /**
+     * Generally used for conversion of multiple A objects to B objects
+     *
+     * @param collection  source object collection
+     * @param targetClass target type
+     * @param <A>         source object generic
+     * @param <B>         target generic
+     * @return target object collection
+     */
     public static <A, B> List<B> convert(Collection<A> collection, Class<B> targetClass) {
         if (collection == null || collection.size() == 0) {
             return new ArrayList<>();
@@ -44,9 +66,19 @@ public class ObjAdapter {
         }
     }
 
+    /**
+     * Generally used for the conversion of a single A object to a B object
+     *
+     * @param a           source object
+     * @param targetClass target type
+     * @param decorator   modify the target object
+     * @param <A>         source object generic
+     * @param <B>         target generic
+     * @return target object
+     */
     @SuppressWarnings("unchecked")
-    public static <V, T> T convert(Object a, Class<T> targetClass, BiConsumer<V, T> decorator) {
-        T b = null;
+    public static <A, B> B convert(Object a, Class<B> targetClass, BiConsumer<A, B> decorator) {
+        B b = null;
         if (a == null) {
             try {
                 b = targetClass.newInstance();
@@ -54,14 +86,22 @@ public class ObjAdapter {
                 LOG.error("" + e);
             }
         } else {
-            List<V> list = new ArrayList<>();
-            list.add((V) a);
-            List<T> result = ObjAdapter.convert(list, targetClass, decorator);
+            List<A> list = new ArrayList<>();
+            list.add((A) a);
+            List<B> result = ObjAdapter.convert(list, targetClass, decorator);
             b = result.get(0);
         }
         return b;
     }
 
+    /**
+     * Generally used for the conversion of a single A object to a B object
+     *
+     * @param a           source object
+     * @param targetClass target type
+     * @param <T>         target generic
+     * @return target object
+     */
     public static <T> T convert(Object a, Class<T> targetClass) {
         T b = null;
         if (a == null) {
