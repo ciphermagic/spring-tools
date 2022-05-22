@@ -1,6 +1,7 @@
 package cn.ciphermagic.common.checker;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -11,8 +12,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author: CipherCui
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RUNTIME)
+@Inherited
 public @interface Check {
 
     /**

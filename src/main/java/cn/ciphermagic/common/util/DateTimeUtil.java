@@ -23,7 +23,7 @@ public class DateTimeUtil {
      *
      * @param strDate string of date
      * @param format  date format
-     * @return date date
+     * @return date
      */
     public static Date strToDate(String strDate, String format) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);

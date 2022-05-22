@@ -1,10 +1,16 @@
 package cn.ciphermagic.common.checker;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
+import com.sun.istack.internal.NotNull;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.support.ComposablePointcut;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.annotation.AnnotationMethodMatcher;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -22,47 +28,57 @@ import java.util.function.Function;
 /**
  * aspect for param check
  *
- * @author: CipherCui
+ * @author CipherCui
  */
-@Aspect
-public class Checker {
-
-    // -====================== constant =========================
+public class CheckerInterceptor implements MethodInterceptor {
 
     private static final String SEPARATOR = ":";
-
-    // -====================== log =========================
-
     private final ExpressionParser parser = new SpelExpressionParser();
     private final LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
-    private Function<String, Object> unsuccess;
+    private Function<String, Object> unsuccessful;
 
-    private Checker() {
+    private CheckerInterceptor() {
     }
 
     /**
      * Action performed when check fails
      *
-     * @param unsuccess lambda of the action
+     * @param unsuccessful lambda of the action
      */
-    public void setUnsuccess(Function<String, Object> unsuccess) {
-        this.unsuccess = unsuccess;
+    public void setUnsuccessful(Function<String, Object> unsuccessful) {
+        this.unsuccessful = unsuccessful;
     }
 
     /**
      * checker builder
      */
     public static class Builder {
-        private final Checker checker = new Checker();
+        private final CheckerInterceptor checker = new CheckerInterceptor();
 
-        public Builder unsuccess(Function<String, Object> unsuccess) {
-            checker.setUnsuccess(unsuccess);
+        public Builder unsuccessful(Function<String, Object> unsuccessful) {
+            checker.setUnsuccessful(unsuccessful);
             return this;
         }
 
-        public Checker build() {
+        public CheckerInterceptor build() {
             return checker;
         }
+    }
+
+    public static Advisor checkAdvisor(Function<String, Object> unsuccessful) {
+        final AnnotationMethodMatcher annotatedMethodOrTargetClassMatcher = new AnnotationMethodMatcher(Check.class, true) {
+            @Override
+            public boolean matches(final Method method, final Class<?> targetClass) {
+                if (AnnotatedElementUtils.hasAnnotation(targetClass, Check.class)) {
+                    return true;
+                }
+                return super.matches(method, targetClass);
+            }
+        };
+        return new DefaultPointcutAdvisor(
+                new ComposablePointcut(annotatedMethodOrTargetClassMatcher),
+                CheckerInterceptor.builder().unsuccessful(unsuccessful).build()
+        );
     }
 
     /**
@@ -75,40 +91,25 @@ public class Checker {
         return new Builder();
     }
 
-    /**
-     * aop around the method
-     *
-     * @param point ProceedingJoinPoint
-     * @return method result
-     * @throws Throwable method exception
-     */
-    @Around(value = "@annotation(cn.ciphermagic.common.checker.Check)")
-    public Object check(ProceedingJoinPoint point) throws Throwable {
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
         Object obj;
-        // check param
-        String msg = doCheck(point);
+        String msg = doCheck(invocation);
         if (!StringUtils.isEmpty(msg)) {
-            return unsuccess.apply(msg);
+            return unsuccessful.apply(msg);
         }
-        obj = point.proceed();
+        obj = invocation.proceed();
         return obj;
     }
 
-    /**
-     * check param
-     *
-     * @param point ProceedingJoinPoint
-     * @return error message
-     */
-    private String doCheck(ProceedingJoinPoint point) {
-        // get arguments
-        Object[] arguments = point.getArgs();
-        // get method
-        Method method = getMethod(point);
+    private String doCheck(MethodInvocation invocation) {
+        Object[] arguments = invocation.getArguments();
+        Method method = invocation.getMethod();
         String methodInfo = StringUtils.isEmpty(method.getName()) ? "" : " while calling " + method.getName();
         String msg = "";
-        if (isCheck(method, arguments)) {
-            Check annotation = method.getAnnotation(Check.class);
+        MergedAnnotation<Check> mergedAnnotation = isCheck(method, arguments);
+        if (mergedAnnotation.isPresent()) {
+            Check annotation = mergedAnnotation.synthesize();
             String[] fields = annotation.value();
             Object vo = arguments[0];
             if (vo == null) {
@@ -371,34 +372,26 @@ public class Checker {
      * @param arguments arguments
      * @return is meets
      */
-    private Boolean isCheck(Method method, Object[] arguments) {
-        Boolean isCheck = Boolean.TRUE;
-        if (!method.isAnnotationPresent(Check.class) || arguments == null) {
-            isCheck = Boolean.FALSE;
+    private MergedAnnotation<Check> isCheck(Method method, Object[] arguments) {
+        final MergedAnnotation<Check> mergedAnnotation = findCheckAnnotation(method);
+        if (!mergedAnnotation.isPresent() || arguments == null) {
+            return MergedAnnotation.missing();
         }
-        return isCheck;
+        return mergedAnnotation;
     }
 
-    /**
-     * get the method
-     *
-     * @param joinPoint ProceedingJoinPoint
-     * @return method
-     */
-    private Method getMethod(ProceedingJoinPoint joinPoint) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-        if (method.getDeclaringClass().isInterface()) {
-            try {
-                method = joinPoint
-                        .getTarget()
-                        .getClass()
-                        .getDeclaredMethod(joinPoint.getSignature().getName(), method.getParameterTypes());
-            } catch (SecurityException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+    @NotNull
+    private static MergedAnnotation<Check> findCheckAnnotation(final Method method) {
+        final MergedAnnotation<Check> methodAnnotation = MergedAnnotations.from(method).get(Check.class);
+        if (methodAnnotation.isPresent()) {
+            return methodAnnotation;
         }
-        return method;
+        // try find from target class, we assume the method is not declared in proxy classes.
+        final MergedAnnotation<Check> classAnnotation = MergedAnnotations.from(method.getDeclaringClass()).get(Check.class);
+        if (classAnnotation.isPresent()) {
+            return classAnnotation;
+        }
+        return MergedAnnotation.missing();
     }
 
     /**
@@ -438,27 +431,27 @@ public class Checker {
         /**
          * GreaterThan
          */
-        GREATER_THAN(">", Checker::isGreaterThan),
+        GREATER_THAN(">", CheckerInterceptor::isGreaterThan),
         /**
          * GreaterThanEqual
          */
-        GREATER_THAN_EQUAL(">=", Checker::isGreaterThanEqual),
+        GREATER_THAN_EQUAL(">=", CheckerInterceptor::isGreaterThanEqual),
         /**
          * LessThan
          */
-        LESS_THAN("<", Checker::isLessThan),
+        LESS_THAN("<", CheckerInterceptor::isLessThan),
         /**
          * LessThanEqual
          */
-        LESS_THAN_EQUAL("<=", Checker::isLessThanEqual),
+        LESS_THAN_EQUAL("<=", CheckerInterceptor::isLessThanEqual),
         /**
          * NotEqual
          */
-        NOT_EQUAL("!=", Checker::isNotEqual),
+        NOT_EQUAL("!=", CheckerInterceptor::isNotEqual),
         /**
          * NotNull
          */
-        NOT_NULL("not null", Checker::isNotNull);
+        NOT_NULL("not null", CheckerInterceptor::isNotNull);
 
         private final String value;
         private final BiFunction<Object, String, Boolean> fun;

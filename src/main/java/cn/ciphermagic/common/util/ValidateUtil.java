@@ -21,10 +21,10 @@ public class ValidateUtil {
      * @param sql sql lambda expression
      * @param msg error message
      * @param err error handle lambda expression
-     * @see ValidateUtil#checkSQL(Supplier, String, Consumer, boolean) includeZero is true
+     * @see ValidateUtil#checkSql(Supplier, String, Consumer, boolean) includeZero is true
      */
-    public static void checkSQL(Supplier<Integer> sql, String msg, Consumer<String> err) {
-        ValidateUtil.checkSQL(sql, msg, err, Boolean.TRUE);
+    public static void checkSql(Supplier<Integer> sql, String msg, Consumer<String> err) {
+        ValidateUtil.checkSql(sql, msg, err, Boolean.TRUE);
     }
 
     /**
@@ -35,7 +35,7 @@ public class ValidateUtil {
      * @param err         error handle lambda expression
      * @param includeZero Whether the error is caused when the number of rows is 0
      */
-    public static void checkSQL(Supplier<Integer> sql, String msg, Consumer<String> err, boolean includeZero) {
+    public static void checkSql(Supplier<Integer> sql, String msg, Consumer<String> err, boolean includeZero) {
         try {
             int row = sql.get();
             if (includeZero) {
