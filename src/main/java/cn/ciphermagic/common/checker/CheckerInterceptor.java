@@ -1,6 +1,5 @@
 package cn.ciphermagic.common.checker;
 
-import com.sun.istack.internal.NotNull;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.Advisor;
@@ -380,7 +379,6 @@ public class CheckerInterceptor implements MethodInterceptor {
         return mergedAnnotation;
     }
 
-    @NotNull
     private static MergedAnnotation<Check> findCheckAnnotation(final Method method) {
         final MergedAnnotation<Check> methodAnnotation = MergedAnnotations.from(method).get(Check.class);
         if (methodAnnotation.isPresent()) {
