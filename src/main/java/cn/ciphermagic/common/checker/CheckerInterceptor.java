@@ -184,7 +184,7 @@ public class CheckerInterceptor implements MethodInterceptor {
             }
         }
         // parse operator
-        if (fieldStr.startsWith("#")) {
+        if (fieldStr.startsWith("#") || fieldStr.startsWith("T(")) {
             fieldInfo.optEnum = Operator.SPEL;
         } else if (fieldStr.contains(Operator.GREATER_THAN_EQUAL.value)) {
             fieldInfo.optEnum = Operator.GREATER_THAN_EQUAL;
