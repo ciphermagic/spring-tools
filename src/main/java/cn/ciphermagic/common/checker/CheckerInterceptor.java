@@ -20,7 +20,10 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -106,32 +109,28 @@ public class CheckerInterceptor implements MethodInterceptor {
         Method method = invocation.getMethod();
         String methodInfo = StringUtils.isEmpty(method.getName()) ? "" : " while calling " + method.getName();
         String msg = "";
-        MergedAnnotation<Check> mergedAnnotation = isCheck(method, arguments);
-        if (mergedAnnotation.isPresent()) {
-            Check annotation = mergedAnnotation.synthesize();
-            String[] fields = annotation.value();
-            Object vo = arguments[0];
-            if (vo == null) {
-                msg = "param can not be null";
-            } else {
-                for (String field : fields) {
-                    FieldInfo info = resolveField(field, methodInfo);
-                    Boolean isValid;
-                    if (info.optEnum == Operator.SPEL) {
-                        isValid = parseSpel(method, arguments, info.field);
-                    } else {
-                        String getMethodName = "get" + StringUtils.capitalize(info.field);
-                        Method getMethod = ReflectionUtils.findMethod(vo.getClass(), getMethodName);
-                        if (getMethod == null) {
-                            break;
-                        }
-                        Object value = ReflectionUtils.invokeMethod(getMethod, vo);
-                        isValid = info.optEnum.fun.apply(value, info.operatorNum);
-                    }
-                    if (!isValid) {
-                        msg = info.innerMsg;
+        List<String> fields = getFields(method, arguments);
+        Object vo = arguments[0];
+        if (vo == null) {
+            msg = "param can not be null";
+        } else if (!CollectionUtils.isEmpty(fields)) {
+            for (String field : fields) {
+                FieldInfo info = resolveField(field, methodInfo);
+                Boolean isValid;
+                if (info.optEnum == Operator.SPEL) {
+                    isValid = parseSpel(method, arguments, info.field);
+                } else {
+                    String getMethodName = "get" + StringUtils.capitalize(info.field);
+                    Method getMethod = ReflectionUtils.findMethod(vo.getClass(), getMethodName);
+                    if (getMethod == null) {
                         break;
                     }
+                    Object value = ReflectionUtils.invokeMethod(getMethod, vo);
+                    isValid = info.optEnum.fun.apply(value, info.operatorNum);
+                }
+                if (!isValid) {
+                    msg = info.innerMsg;
+                    break;
                 }
             }
         }
@@ -364,32 +363,22 @@ public class CheckerInterceptor implements MethodInterceptor {
         return isNotEqual;
     }
 
-    /**
-     * is meets the parameter rules
-     *
-     * @param method    method
-     * @param arguments arguments
-     * @return is meets
-     */
-    private MergedAnnotation<Check> isCheck(Method method, Object[] arguments) {
-        final MergedAnnotation<Check> mergedAnnotation = findCheckAnnotation(method);
-        if (!mergedAnnotation.isPresent() || arguments == null) {
-            return MergedAnnotation.missing();
+    private List<String> getFields(Method method, Object[] arguments) {
+        if (arguments == null) {
+            return new ArrayList<>();
         }
-        return mergedAnnotation;
-    }
-
-    private static MergedAnnotation<Check> findCheckAnnotation(final Method method) {
-        final MergedAnnotation<Check> methodAnnotation = MergedAnnotations.from(method).get(Check.class);
-        if (methodAnnotation.isPresent()) {
-            return methodAnnotation;
+        List<String> list = new ArrayList<>();
+        MergedAnnotations.from(method).stream(Check.class)
+                .filter(MergedAnnotation::isPresent)
+                .map(MergedAnnotation::synthesize)
+                .map(Check::value).forEach(strings -> list.addAll(Arrays.asList(strings)));
+        if (CollectionUtils.isEmpty(list)) {
+            MergedAnnotations.from(method.getDeclaringClass()).stream(Check.class)
+                    .filter(MergedAnnotation::isPresent)
+                    .map(MergedAnnotation::synthesize)
+                    .map(Check::value).forEach(strings -> list.addAll(Arrays.asList(strings)));
         }
-        // try find from target class, we assume the method is not declared in proxy classes.
-        final MergedAnnotation<Check> classAnnotation = MergedAnnotations.from(method.getDeclaringClass()).get(Check.class);
-        if (classAnnotation.isPresent()) {
-            return classAnnotation;
-        }
-        return MergedAnnotation.missing();
+        return list;
     }
 
     /**
