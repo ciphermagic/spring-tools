@@ -23,4 +23,10 @@ public @interface Check {
      */
     String[] value() default {};
 
+    /**
+     * dynamic field validation rules
+     * @return key of dynamic filed
+     */
+    String dynamic() default "";
+
 }

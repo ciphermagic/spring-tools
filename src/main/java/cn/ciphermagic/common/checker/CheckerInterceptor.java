@@ -20,12 +20,11 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * aspect for param check
@@ -35,6 +34,7 @@ import java.util.function.Function;
 public class CheckerInterceptor implements MethodInterceptor {
 
     private static final String SEPARATOR = ":";
+    private static final Map<String, String[]> DYNAMIC_FIELDS = new ConcurrentHashMap<>();
     private final ExpressionParser parser = new SpelExpressionParser();
     private final LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
     private Function<String, Object> unsuccessful;
@@ -49,6 +49,14 @@ public class CheckerInterceptor implements MethodInterceptor {
      */
     public void setUnsuccessful(Function<String, Object> unsuccessful) {
         this.unsuccessful = unsuccessful;
+    }
+
+    public static void updateDynamicField(String key, String[] value) {
+        DYNAMIC_FIELDS.put(key, value);
+    }
+
+    public static void removeDynamicField(String key) {
+        DYNAMIC_FIELDS.remove(key);
     }
 
     /**
@@ -109,11 +117,14 @@ public class CheckerInterceptor implements MethodInterceptor {
         Method method = invocation.getMethod();
         String methodInfo = StringUtils.isEmpty(method.getName()) ? "" : " while calling " + method.getName();
         String msg = "";
-        List<String> fields = getFields(method, arguments);
-        Object vo = arguments[0];
-        if (vo == null) {
+        List<Check> checks = getChecks(method);
+        List<String> fields = getFixedFields(checks);
+        fields.addAll(getDynamicFields(checks));
+        fields = fields.stream().filter(f->!StringUtils.isEmpty(f)).collect(Collectors.toList());
+        if (arguments.length == 0) {
             msg = "param can not be null";
         } else if (!CollectionUtils.isEmpty(fields)) {
+            Object vo = arguments[0];
             for (String field : fields) {
                 FieldInfo info = resolveField(field, methodInfo);
                 Boolean isValid;
@@ -363,21 +374,32 @@ public class CheckerInterceptor implements MethodInterceptor {
         return isNotEqual;
     }
 
-    private List<String> getFields(Method method, Object[] arguments) {
-        if (arguments == null) {
-            return new ArrayList<>();
-        }
-        List<String> list = new ArrayList<>();
-        MergedAnnotations.from(method).stream(Check.class)
-                .filter(MergedAnnotation::isPresent)
-                .map(MergedAnnotation::synthesize)
-                .map(Check::value).forEach(strings -> list.addAll(Arrays.asList(strings)));
+    private List<Check> getChecks(Method method) {
+        List<Check> list = new ArrayList<>();
         if (CollectionUtils.isEmpty(list)) {
+            MergedAnnotations.from(method).stream(Check.class)
+                    .filter(MergedAnnotation::isPresent)
+                    .map(MergedAnnotation::synthesize)
+                    .forEach(list::add);
             MergedAnnotations.from(method.getDeclaringClass()).stream(Check.class)
                     .filter(MergedAnnotation::isPresent)
                     .map(MergedAnnotation::synthesize)
-                    .map(Check::value).forEach(strings -> list.addAll(Arrays.asList(strings)));
+                    .forEach(list::add);
         }
+        return list;
+    }
+
+    private List<String> getFixedFields(List<Check> checks) {
+        List<String> list = new ArrayList<>();
+        checks.stream().map(Check::value).forEach(strings -> list.addAll(Arrays.asList(strings)));
+        return list;
+    }
+
+    private List<String> getDynamicFields(List<Check> checks) {
+        List<String> list = new ArrayList<>();
+        checks.stream().map(Check::dynamic).filter(dynamic -> !StringUtils.isEmpty(dynamic))
+                .map(DYNAMIC_FIELDS::get).filter(s -> !StringUtils.isEmpty(s))
+                .forEach(values -> list.addAll(Arrays.asList(values)));
         return list;
     }
 
